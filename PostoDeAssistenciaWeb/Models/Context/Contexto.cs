@@ -7,6 +7,10 @@ namespace PostoDeAssistenciaWeb.Models.Context
     [DbConfigurationType(typeof(MySql.Data.Entity.MySqlEFConfiguration))]
     public class Contexto : DbContext
     {
+        public Contexto() : base("Contexto")
+        {
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
