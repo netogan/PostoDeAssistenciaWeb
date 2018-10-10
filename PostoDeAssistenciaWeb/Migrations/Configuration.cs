@@ -10,7 +10,7 @@ namespace PostoDeAssistenciaWeb.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
-            SetSqlGenerator("MySql.Data.MySqlClient", new MySql.Data.Entity.MySqlMigrationSqlGenerator());
+            SetSqlGenerator("MySql.Data.MySqlClient", new myMigrationSQLGenerator());
             ContextKey = "TesteMysql.Models.Context.BancoContext";
         }
 

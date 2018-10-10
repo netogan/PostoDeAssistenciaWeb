@@ -7,7 +7,7 @@ namespace PostoDeAssistenciaWeb.Models
 {
     public class Endereco
     {
-        public Guid Id { get; set; }
+        public Guid EnderecoId { get; set; }
 
         public string Uf { get; set; }
 
@@ -18,5 +18,7 @@ namespace PostoDeAssistenciaWeb.Models
         public string Logradouro { get; set; }
 
         public string Complemento { get; set; }
+
+        public virtual Assistido Assistido { get; set; }
     }
 }

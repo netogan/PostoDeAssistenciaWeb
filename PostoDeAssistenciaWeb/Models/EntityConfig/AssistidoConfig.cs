@@ -6,7 +6,7 @@ namespace PostoDeAssistenciaWeb.Models.EntityConfig
     {
         public AssistidoConfig()
         {
-            HasKey(a => a.Id);
+            HasKey(a => a.AssistidoId);
             Property(a => a.NomeCompleto).IsRequired().HasMaxLength(150);
             Property(a => a.Observacao).IsRequired().HasMaxLength(500);
 
@@ -16,6 +16,9 @@ namespace PostoDeAssistenciaWeb.Models.EntityConfig
             Property(a => a.NumeracaoRoupaSuperior).IsOptional();
             Property(a => a.NumeracaoRoupaInferior).IsOptional();
             Property(a => a.Observacao).IsOptional();
+            Property(a => a.DependenteId).IsOptional();
+
+            //HasOptional(o => o.Endereco).WithOptionalPrincipal(p => p.Assistido);
 
             ToTable("Assistidos");
         }

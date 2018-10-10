@@ -175,12 +175,12 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\AssistidoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\myMigrationSQLGenerator.cs" />
     <Compile Include="Models\Assistido.cs" />
     <Compile Include="Models\Context\Contexto.cs" />
     <Compile Include="Models\Endereco.cs" />
@@ -227,11 +227,6 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Assistido\Create.cshtml" />
-    <Content Include="Views\Assistido\Delete.cshtml" />
-    <Content Include="Views\Assistido\Details.cshtml" />
-    <Content Include="Views\Assistido\Edit.cshtml" />
-    <Content Include="Views\Assistido\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

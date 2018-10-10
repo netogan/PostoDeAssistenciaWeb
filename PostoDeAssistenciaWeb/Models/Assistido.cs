@@ -4,7 +4,9 @@ namespace PostoDeAssistenciaWeb.Models
 {
     public class Assistido
     {
-        public Guid Id { get; set; }
+        public Guid AssistidoId { get; set; }
+
+        //public Guid EnderecoId { get; set; }
 
         public string NomeCompleto { get; set; }
 
@@ -31,5 +33,7 @@ namespace PostoDeAssistenciaWeb.Models
         public bool Principal { get; set; }
 
         public Guid DependenteId { get; set; }
+
+        public virtual Endereco Endereco { get; set; }
     }
 }
