@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace PostoDeAssistenciaWeb.Models
 {
@@ -14,7 +15,8 @@ namespace PostoDeAssistenciaWeb.Models
 
         public int Idade { get; set; }
 
-        public DateTime DataNascimento { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? DataNascimento { get; set; }
 
         public string GrauParentesco { get; set; }
 
@@ -32,7 +34,7 @@ namespace PostoDeAssistenciaWeb.Models
 
         public bool Principal { get; set; }
 
-        public Guid DependenteId { get; set; }
+        public Guid? DependenteId { get; set; }
 
         public virtual Endereco Endereco { get; set; }
     }
