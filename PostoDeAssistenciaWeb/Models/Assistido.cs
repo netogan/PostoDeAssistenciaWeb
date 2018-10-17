@@ -9,10 +9,12 @@ namespace PostoDeAssistenciaWeb.Models
 
         //public Guid EnderecoId { get; set; }
 
+        [Required(ErrorMessage = "Informe o nome completo", AllowEmptyStrings = false)]
         public string NomeCompleto { get; set; }
 
         public string Sexo { get; set; }
 
+        [RegularExpression("([1-9][0-9]*)", ErrorMessage = "Informe uma idade válida")]
         public int Idade { get; set; }
 
         [DataType(DataType.Date)]

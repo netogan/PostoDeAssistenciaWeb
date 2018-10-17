@@ -46,4 +46,4 @@
         return originalMethods.range.call(this, val, element, param);
     };
 
-}(jQuery, Globalize));
+});
