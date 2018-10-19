@@ -4,8 +4,10 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using PostoDeAssistenciaWeb.Models;
 using PostoDeAssistenciaWeb.Models.Context;
 
@@ -115,6 +117,38 @@ namespace PostoDeAssistenciaWeb.Controllers
             db.Assistidos.Remove(assistido);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IEnumerable<Assistido> ObterTodos()
+        {
+            return db.Assistidos.ToList();
+        }
+
+        [HttpGet]
+        public JsonResult ObterPorNome(string nome)
+        {
+            var listaAssistidos = db.Assistidos.ToList();
+
+            var filtro = listaAssistidos.Where(x => removerAcentos(x.NomeCompleto).ToLower().Contains(removerAcentos(nome)));
+
+            if (filtro == null) return null;
+
+            var serializer = new JavaScriptSerializer();
+
+            return Json(serializer.Serialize(filtro), JsonRequestBehavior.AllowGet);
+        }
+
+        public static string removerAcentos(string texto)
+        {
+            string comAcentos = "ÄÅÁÂÀÃäáâàãÉÊËÈéêëèÍÎÏÌíîïìÖÓÔÒÕöóôòõÜÚÛüúûùÇç";
+            string semAcentos = "AAAAAAaaaaaEEEEeeeeIIIIiiiiOOOOOoooooUUUuuuuCc";
+
+            for (int i = 0; i < comAcentos.Length; i++)
+            {
+                texto = texto.Replace(comAcentos[i].ToString(), semAcentos[i].ToString());
+            }
+            return texto;
         }
 
         protected override void Dispose(bool disposing)

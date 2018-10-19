@@ -10,6 +10,8 @@
 
     ViewData["Sexo"] = optionsSexo;
 
+    var listaAssistidos = new PostoDeAssistenciaWeb.Controllers.AssistidoController().ObterTodos().ToList();
+
 }
 
 <h2>@*Create*@</h2>
@@ -140,52 +142,134 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.DependenteId, "Vínculo", htmlAttributes: new { @class = "control-label col-md-2" })
+            @*@Html.button(model => model.DependenteId, "Vínculo", htmlAttributes: new { @class = "control-label col-md-2" })*@
+            <button type="button" id="vinculo" class="control-label col-md-2 btn btn-secondary" style="text-align:center">Vinculo</button>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DependenteId, new { htmlAttributes = new { @class = "form-control" } })
+                @*@Html.ActionLink("Vinculo", "", null, new { @class = "btn btn-secondary" })*@
+                @Html.EditorFor(model => model.DependenteId, new { htmlAttributes = new { @class = "form-control", @style = "display:none", @readonly = "readonly" } })
+                @Html.Editor("Dependente", new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.DependenteId, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Salvar" class="btn btn-default" />
                 @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-primary" })
+                <input type="submit" value="Salvar" class="btn btn-success" />
             </div>
         </div>
     </div>
-}
+
+    //Popup
+    <div id="dialog-modal" title="Selecione o vínculo">
+        @*@Html.TextBox("pesquisa-assistido", null, new { htmlAttributes = new { @class = "form-control", @onkeydown = "findVinculo()" } })*@
+        <input id="pesquisa" class="form-control" onkeyup="findVinculo()"/>
+        <br />
+        <br />
+        <table id="tbVinculo" class="table">
+            <tr>
+                <th>
+                    @Html.DisplayName("Nome completo")
+                </th>
+            </tr>
+            <tbody id="tbVinculoBody">
+                @foreach (var item in listaAssistidos)
+                {
+                    <tr>
+                        <td>
+                            <a href="#" style="text-decoration:none" onclick="setValorVinculo('@item.AssistidoId', '@item.NomeCompleto');">@item.NomeCompleto</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            </table>
+        </div>
+    }
 
 
 
-@*<script src="~/Scripts/jquery-3.3.1.min.js"></script>
-    <script src="~/Scripts/jquery.validate.min.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+            @*<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+                <script src="~/Scripts/jquery.validate.min.js"></script>
+                <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
 
-@section Scripts {
+            @section Scripts {
 
-    <script type="text/javascript" language="javascript">
-        $(function () {
-            $('input[type=datetime]').datepicker({
-                dateFormat: 'dd/mm/yy',
-                dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
-                dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
-                dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-                monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
-                monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-                nextText: 'Proximo',
-                prevText: 'Anterior',
-                showOn: "button"
-            }).css("display", "inline-block")
-                .next("button").button({
-                    icons: { primary: "ui-icon-calendar" },
-                    label: "Selecione uma data",
-                    text: false
-                });
-        });
+                <script type="text/javascript" language="javascript">
+                    $(function () {
+                        $('input[type=datetime]').datepicker({
+                            dateFormat: 'dd/mm/yy',
+                            dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'],
+                            dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                            dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                            monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                            monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                            nextText: 'Proximo',
+                            prevText: 'Anterior',
+                            showOn: "button"
+                        }).css("display", "inline-block")
+                            .next("button").button({
+                                icons: { primary: "ui-icon-calendar" },
+                                label: "Selecione uma data",
+                                text: false
+                            });
+                    });
 
-    </script>
+                </script>
 
-    @Scripts.Render("~/bundles/jqueryval")
+                <script>
+                    $(function () {
+                        $("#dialog-modal").dialog({
+                            autoOpen: false,
+                            width: 600,
+                            height: 400,
+                            modal: true
+                        });
 
-}
+                        $("#vinculo").click(function () {
+                            $("#dialog-modal").dialog("open");
+                        });
+                    });
+
+                </script>
+
+                <script>
+                    function setValorVinculo(idVinculo, nomeVinculo) {
+                        $("#Dependente").val(nomeVinculo);
+                        $("#DependenteId").val(idVinculo);
+                        $("#dialog-modal").dialog("close");
+                    }
+                </script>
+
+                <script>
+                    function findVinculo() {
+                        $("#tbVinculoBody").empty();
+
+                        $.ajax({
+                            type: "GET",
+                            url: "/Assistido/ObterPorNome",
+                            datatype: "json",
+                            data: {"nome": $("[id$=pesquisa]").val() },
+                            success: function (result) {
+
+                                for (l = 0; l < JSON.parse(result).length; l++) {
+                                    $('#tbVinculoBody').append(
+                                        `<tr>
+                                            <td>
+                                                <a href='#' style='text-decoration:none' onclick="setValorVinculo('${JSON.parse(result)[l].AssistidoId}', '${JSON.parse(result)[l].NomeCompleto}' ); "> ${JSON.parse(result)[l].NomeCompleto} </a>
+                                            </td>
+                                        </tr>`
+                                    )
+                                }
+                            }
+                            //,
+                            //error: function () {
+                            //    alert("error");
+                            //}
+                        });
+
+                    }
+                </script>
+
+                @Scripts.Render("~/bundles/jqueryval")
+
+            }
