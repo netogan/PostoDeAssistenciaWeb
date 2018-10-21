@@ -70,6 +70,7 @@ namespace PostoDeAssistenciaWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Assistido assistido = db.Assistidos.Find(id);
+
             if (assistido == null)
             {
                 return HttpNotFound();
@@ -137,6 +138,20 @@ namespace PostoDeAssistenciaWeb.Controllers
             var serializer = new JavaScriptSerializer();
 
             return Json(serializer.Serialize(filtro), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult ObterPorId(Guid id)
+        {
+            if(id == null) return Json(new EmptyResult(), JsonRequestBehavior.AllowGet);
+
+            var assistido = db.Assistidos.Find(id);
+
+            if (assistido == null) return Json(new EmptyResult(), JsonRequestBehavior.AllowGet);
+
+            var serializer = new JavaScriptSerializer();
+
+            return Json(serializer.Serialize(assistido), JsonRequestBehavior.AllowGet);
         }
 
         public static string removerAcentos(string texto)

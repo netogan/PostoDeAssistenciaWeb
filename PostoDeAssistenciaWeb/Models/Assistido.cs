@@ -18,6 +18,7 @@ namespace PostoDeAssistenciaWeb.Models
         public int Idade { get; set; }
 
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? DataNascimento { get; set; }
 
         public string GrauParentesco { get; set; }

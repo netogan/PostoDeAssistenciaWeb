@@ -4,8 +4,6 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
-
 <div>
     <h4>Endereco</h4>
     <hr />
@@ -53,6 +51,10 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.EnderecoId }) |
-    @Html.ActionLink("Back to List", "Index")
+    <div class="col-md-offset-2 col-md-10">
+        @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Editar", "Edit", new { id = Model.EnderecoId }, new { @class = "btn btn-primary" })
+    </div>
 </p>
+
+<br />

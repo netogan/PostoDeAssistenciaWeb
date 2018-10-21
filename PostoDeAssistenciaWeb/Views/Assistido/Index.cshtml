@@ -97,9 +97,9 @@
             @Html.DisplayFor(modelItem => item.DependenteId)
         </td>*@
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.AssistidoId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.AssistidoId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.AssistidoId })
+            @Html.ActionLink("Edit", "Edit", new { id=item.AssistidoId }, htmlAttributes: new { @class = "label label-primary" }) 
+            @Html.ActionLink("Details", "Details", new { id=item.AssistidoId }, htmlAttributes: new { @class = "label label-primary" }) 
+            @Html.ActionLink("Delete", "Delete", new { id=item.AssistidoId }, htmlAttributes: new { @class = "label label-danger" })
         </td>
     </tr>
 }
