@@ -49,7 +49,7 @@ namespace PostoDeAssistenciaWeb.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "AssistidoId,NomeCompleto,Sexo,Idade,DataNascimento,GrauParentesco,Telefone1,Telefone2,NumeracaoCalcado,NumeracaoRoupaSuperior,NumeracaoRoupaInferior,Observacao,Principal,DependenteId")] Assistido assistido)
+        public ActionResult Create([Bind(Include = "AssistidoId,NomeCompleto,Sexo,Idade,DataNascimento,GrauParentesco,Telefone1,Telefone2,NumeracaoCalcado,NumeracaoRoupaSuperior,NumeracaoRoupaInferior,Observacao,Principal,DependenteId,Endereco_EnderecoId")] Assistido assistido)
         {
             if (ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace PostoDeAssistenciaWeb.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "AssistidoId,NomeCompleto,Sexo,Idade,DataNascimento,GrauParentesco,Telefone1,Telefone2,NumeracaoCalcado,NumeracaoRoupaSuperior,NumeracaoRoupaInferior,Observacao,Principal,DependenteId")] Assistido assistido)
+        public ActionResult Edit([Bind(Include = "AssistidoId,NomeCompleto,Sexo,Idade,DataNascimento,GrauParentesco,Telefone1,Telefone2,NumeracaoCalcado,NumeracaoRoupaSuperior,NumeracaoRoupaInferior,Observacao,Principal,DependenteId,Endereco_EnderecoId")] Assistido assistido)
         {
             if (ModelState.IsValid)
             {
@@ -131,7 +131,8 @@ namespace PostoDeAssistenciaWeb.Controllers
         {
             var listaAssistidos = db.Assistidos.ToList();
 
-            var filtro = listaAssistidos.Where(x => removerAcentos(x.NomeCompleto).ToLower().Contains(removerAcentos(nome)));
+            var filtro = listaAssistidos.Where(x => 
+                            Utils.CaracterEspecial.RemoverAcentos(x.NomeCompleto).ToLower().Contains(Utils.CaracterEspecial.RemoverAcentos(nome)));
 
             if (filtro == null) return null;
 
@@ -152,18 +153,6 @@ namespace PostoDeAssistenciaWeb.Controllers
             var serializer = new JavaScriptSerializer();
 
             return Json(serializer.Serialize(assistido), JsonRequestBehavior.AllowGet);
-        }
-
-        public static string removerAcentos(string texto)
-        {
-            string comAcentos = "ÄÅÁÂÀÃäáâàãÉÊËÈéêëèÍÎÏÌíîïìÖÓÔÒÕöóôòõÜÚÛüúûùÇç";
-            string semAcentos = "AAAAAAaaaaaEEEEeeeeIIIIiiiiOOOOOoooooUUUuuuuCc";
-
-            for (int i = 0; i < comAcentos.Length; i++)
-            {
-                texto = texto.Replace(comAcentos[i].ToString(), semAcentos[i].ToString());
-            }
-            return texto;
         }
 
         protected override void Dispose(bool disposing)
