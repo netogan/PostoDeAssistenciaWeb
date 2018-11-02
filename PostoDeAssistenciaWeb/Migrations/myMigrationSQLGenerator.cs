@@ -1,4 +1,5 @@
 ﻿using MySql.Data.Entity;
+using System.Collections.Generic;
 using System.Data.Entity.Migrations.Model;
 using System.Data.Entity.Migrations.Sql;
 using System.Linq;
@@ -12,6 +13,17 @@ namespace PostoDeAssistenciaWeb.Migrations
             if (table.StartsWith("dbo."))
                 return table.Replace("dbo.", "");
             return table;
+        }
+
+        public override IEnumerable<MigrationStatement> Generate(IEnumerable<MigrationOperation> migrationOperations, string providerManifestToken)
+        {
+            IEnumerable<MigrationStatement> res = base.Generate(migrationOperations, providerManifestToken);
+            foreach (MigrationStatement ms in res)
+            {
+                ms.Sql = ms.Sql.Replace("dbo.", "");
+            }
+            return res;
+
         }
 
         protected override MigrationStatement Generate(CreateIndexOperation op)
