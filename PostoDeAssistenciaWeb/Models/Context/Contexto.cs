@@ -18,6 +18,7 @@ namespace PostoDeAssistenciaWeb.Models.Context
             modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
 
             modelBuilder.Properties<string>().Configure(m => m.HasMaxLength(200).HasColumnType("nvarchar"));
+            modelBuilder.Properties<string>().Configure(m => m.HasMaxLength(200).HasColumnType("varchar"));
 
             modelBuilder.Configurations.Add(new AssistidoConfig());
             modelBuilder.Configurations.Add(new EnderecoConfig());

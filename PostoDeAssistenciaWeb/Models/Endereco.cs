@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 
 namespace PostoDeAssistenciaWeb.Models
 {
@@ -7,8 +10,6 @@ namespace PostoDeAssistenciaWeb.Models
         public Guid EnderecoId { get; set; }
 
         public string Uf { get; set; }
-
-        public string Cep { get; set; }
 
         public string Cidade { get; set; }
 

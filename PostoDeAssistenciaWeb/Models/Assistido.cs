@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PostoDeAssistenciaWeb.Models
 {
     public class Assistido
     {
         public Guid AssistidoId { get; set; }
+
+        //public Guid EnderecoId { get; set; }
 
         [Required(ErrorMessage = "Informe o nome completo", AllowEmptyStrings = false)]
         public string NomeCompleto { get; set; }

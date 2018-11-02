@@ -1,5 +1,5 @@
 /**
- * Globalize v1.3.0
+ * Globalize v1.0.0
  *
  * http://github.com/jquery/globalize
  *
@@ -7,10 +7,10 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2017-07-03T21:37Z
+ * Date: 2015-04-23T12:02Z
  */
 /*!
- * Globalize v1.3.0 2017-07-03T21:37Z Released under the MIT license
+ * Globalize v1.0.0 2015-04-23T12:02Z Released under the MIT license
  * http://git.io/TrdQbw
  */
 (function( root, factory ) {
@@ -28,7 +28,7 @@
 	} else if ( typeof exports === "object" ) {
 
 		// Node, CommonJS
-		module.exports = factory( require( "cldrjs" ), require( "../globalize" ) );
+		module.exports = factory( require( "cldrjs" ), require( "globalize" ) );
 	} else {
 
 		// Global
@@ -37,8 +37,8 @@
 }(this, function( Cldr, Globalize ) {
 
 var createError = Globalize._createError,
+	objectExtend = Globalize._objectExtend,
 	regexpEscape = Globalize._regexpEscape,
-	runtimeBind = Globalize._runtimeBind,
 	stringPad = Globalize._stringPad,
 	validateCldr = Globalize._validateCldr,
 	validateDefaultLocale = Globalize._validateDefaultLocale,
@@ -152,33 +152,17 @@ var numberFormatIntegerFractionDigits = function( number, minimumIntegerDigits, 
 			number = round( number, { exponent: -maximumFractionDigits } );
 		}
 
+		// Minimum fraction digits
+		if ( minimumFractionDigits ) {
+			number = String( number ).split( "." );
+			number[ 1 ] = stringPad( number[ 1 ] || "", minimumFractionDigits, true );
+			number = number.join( "." );
+		}
 	} else {
 		number = round( number );
 	}
 
 	number = String( number );
-
-	// Maximum integer digits (post string phase)
-	if ( maximumFractionDigits && /e-/.test( number ) ) {
-
-		// Use toFixed( maximumFractionDigits ) to make sure small numbers like 1e-7 are
-		// displayed using plain digits instead of scientific notation.
-		// 1: Remove leading decimal zeros.
-		// 2: Remove leading decimal separator.
-		// Note: String() is still preferred so it doesn't mess up with a number precision
-		// unnecessarily, e.g., (123456789.123).toFixed(10) === "123456789.1229999959",
-		// String(123456789.123) === "123456789.123".
-		number = ( +number ).toFixed( maximumFractionDigits )
-			.replace( /0+$/, "" ) /* 1 */
-			.replace( /\.$/, "" ) /* 2 */;
-	}
-
-	// Minimum fraction digits (post string phase)
-	if ( minimumFractionDigits ) {
-		number = number.split( "." );
-		number[ 1 ] = stringPad( number[ 1 ] || "", minimumFractionDigits, true );
-		number = number.join( "." );
-	}
 
 	// Minimum integer digits
 	if ( minimumIntegerDigits ) {
@@ -250,7 +234,7 @@ var numberFormatSignificantDigits = function( number, minimumSignificantDigits, 
 	// Expand integer numbers, eg. 123e5 to 12300.
 	number = ( +number ).toString( 10 );
 
-	if ( ( /e/ ).test( number ) ) {
+	if ( (/e/).test( number ) ) {
 		throw createErrorUnsupportedFeature({
 			feature: "integers out of (1e21, 1e-7)"
 		});
@@ -264,28 +248,6 @@ var numberFormatSignificantDigits = function( number, minimumSignificantDigits, 
 	}
 
 	return number;
-};
-
-
-
-
-/**
- * removeLiteralQuotes( string )
- *
- * Return:
- * - `` if input string is `''`.
- * - `o'clock` if input string is `'o''clock'`.
- * - `foo` if input string is `foo`, i.e., return the same value in case it isn't a single-quoted
- *   string.
- */
-var removeLiteralQuotes = function( string ) {
-	if ( string[ 0 ] + string[ string.length - 1 ] !== "''" ) {
-		return string;
-	}
-	if ( string === "''" ) {
-		return "";
-	}
-	return string.replace( /''/g, "'" ).slice( 1, -1 );
 };
 
 
@@ -387,7 +349,11 @@ var numberFormat = function( number, properties ) {
 
 		// Literals
 		if ( literal ) {
-			return removeLiteralQuotes( literal );
+			literal = literal.replace( /''/, "'" );
+			if ( literal.length > 2 ) {
+				literal = literal.slice( 1, -1 );
+			}
+			return literal;
 		}
 
 		// Symbols
@@ -404,18 +370,6 @@ var numberFormat = function( number, properties ) {
 
 		return character;
 	});
-};
-
-
-
-
-var numberFormatterFn = function( properties ) {
-	return function numberFormatter( value ) {
-		validateParameterPresence( value, "value" );
-		validateParameterTypeNumber( value, "value" );
-
-		return numberFormat( value, properties );
-	};
 };
 
 
@@ -514,18 +468,17 @@ var numberNumberingSystemDigitsMap = function( cldr ) {
  *  0: number_pattern_re
  *  1: prefix
  *  2: -
- *  3: -
- *  4: padding
- *  5: (integer_fraction_pattern | significant_pattern)
- *  6: integer_fraction_pattern
- *  7: integer_pattern
- *  8: fraction_pattern
- *  9: significant_pattern
- * 10: scientific_notation
- * 11: suffix
- * 12: -
+ *  3: padding
+ *  4: (integer_fraction_pattern | significant_pattern)
+ *  5: integer_fraction_pattern
+ *  6: integer_pattern
+ *  7: fraction_pattern
+ *  8: significant_pattern
+ *  9: scientific_notation
+ * 10: suffix
+ * 11: -
  */
-var numberPatternRe = ( /^(('([^']|'')*'|[^*#@0,.E])*)(\*.)?((([#,]*[0,]*0+)(\.0*[0-9]*#*)?)|([#,]*@+#*))(E\+?0+)?(('[^']+'|''|[^*#@0,.E])*)$/ );
+var numberPatternRe = (/^(('[^']+'|''|[^*#@0,.E])*)(\*.)?((([#,]*[0,]*0+)(\.0*[0-9]*#*)?)|([#,]*@+#*))(E\+?0+)?(('[^']+'|''|[^*#@0,.E])*)$/);
 
 
 
@@ -552,11 +505,11 @@ var numberPatternProperties = function( pattern ) {
 	}
 
 	prefix = pattern[ 1 ];
-	padding = pattern[ 4 ];
-	integerFractionOrSignificantPattern = pattern[ 5 ];
-	significantPattern = pattern[ 9 ];
-	scientificNotation = pattern[ 10 ];
-	suffix = pattern[ 11 ];
+	padding = pattern[ 3 ];
+	integerFractionOrSignificantPattern = pattern[ 4 ];
+	significantPattern = pattern[ 8 ];
+	scientificNotation = pattern[ 9 ];
+	suffix = pattern[ 10 ];
 
 	// Significant digit format
 	if ( significantPattern ) {
@@ -568,8 +521,8 @@ var numberPatternProperties = function( pattern ) {
 
 	// Integer and fractional format
 	} else {
-		fractionPattern = pattern[ 8 ];
-		integerPattern = pattern[ 7 ];
+		fractionPattern = pattern[ 7 ];
+		integerPattern = pattern[ 6 ];
 
 		if ( fractionPattern ) {
 
@@ -801,7 +754,7 @@ var numberRound = function( method ) {
 		value = value.toString().split( "e" );
 		value[ 0 ] = +value[ 0 ] / increment;
 		value[ 1 ] = value[ 1 ] ? ( +value[ 1 ] - exp ) : -exp;
-		value = method( +( value[ 0 ] + "e" + value[ 1 ] ) );
+		value = method( +(value[ 0 ] + "e" + value[ 1 ] ) );
 
 		// Shift back
 		value = value.toString().split( "e" );
@@ -833,7 +786,7 @@ var numberRound = function( method ) {
  */
 var numberFormatProperties = function( pattern, cldr, options ) {
 	var negativePattern, negativePrefix, negativeProperties, negativeSuffix, positivePattern,
-		roundFn, properties;
+		properties;
 
 	function getOptions( attribute, propertyIndex ) {
 		if ( attribute in options ) {
@@ -851,18 +804,12 @@ var numberFormatProperties = function( pattern, cldr, options ) {
 	negativePrefix = negativeProperties[ 0 ];
 	negativeSuffix = negativeProperties[ 10 ];
 
-	// Have runtime code to refer to numberRound() instead of including it explicitly.
-	roundFn = numberRound( options.round );
-	roundFn.generatorString = function() {
-		return "numberRound(" + ( options.round ? "\"" + options.round + "\"" : "" ) + ")";
-	};
-
 	properties = numberPatternProperties( positivePattern ).concat([
 		positivePattern,
 		negativePrefix + positivePattern + negativeSuffix,
 		negativePrefix,
 		negativeSuffix,
-		roundFn,
+		numberRound( options.round ),
 		numberSymbol( "infinity", cldr ),
 		numberSymbol( "nan", cldr ),
 		numberSymbolMap( cldr ),
@@ -883,12 +830,10 @@ var numberFormatProperties = function( pattern, cldr, options ) {
 	// Normalize number of digits if only one of either minimumFractionDigits or
 	// maximumFractionDigits is passed in as an option
 	if ( "minimumFractionDigits" in options && !( "maximumFractionDigits" in options ) ) {
-
 		// maximumFractionDigits = Math.max( minimumFractionDigits, maximumFractionDigits );
 		properties[ 4 ] = Math.max( properties[ 3 ], properties[ 4 ] );
 	} else if ( !( "minimumFractionDigits" in options ) &&
 			"maximumFractionDigits" in options ) {
-
 		// minimumFractionDigits = Math.min( minimumFractionDigits, maximumFractionDigits );
 		properties[ 3 ] = Math.min( properties[ 3 ], properties[ 4 ] );
 	}
@@ -911,65 +856,41 @@ var numberFormatProperties = function( pattern, cldr, options ) {
 
 
 /**
- * Generated by:
+ * EBNF representation:
  *
- * var regenerate = require( "regenerate" );
- * var formatSymbols = require( * "unicode-8.0.0/General_Category/Format/symbols" );
- * regenerate().add( formatSymbols ).toString();
+ * number_pattern_re =        prefix_including_padding?
+ *                            number
+ *                            scientific_notation?
+ *                            suffix?
  *
- * https://github.com/mathiasbynens/regenerate
- * https://github.com/mathiasbynens/unicode-8.0.0
+ * number =                   integer_including_group_separator fraction_including_decimal_separator
+ *
+ * integer_including_group_separator =
+ *                            regexp([0-9,]*[0-9]+)
+ *
+ * fraction_including_decimal_separator =
+ *                            regexp((\.[0-9]+)?)
+
+ * prefix_including_padding = non_number_stuff
+ *
+ * scientific_notation =      regexp(E[+-]?[0-9]+)
+ *
+ * suffix =                   non_number_stuff
+ *
+ * non_number_stuff =         regexp([^0-9]*)
+ *
+ *
+ * Regexp groups:
+ *
+ * 0: number_pattern_re
+ * 1: prefix
+ * 2: integer_including_group_separator fraction_including_decimal_separator
+ * 3: integer_including_group_separator
+ * 4: fraction_including_decimal_separator
+ * 5: scientific_notation
+ * 6: suffix
  */
-var regexpCfG = /[\xAD\u0600-\u0605\u061C\u06DD\u070F\u180E\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F\uFEFF\uFFF9-\uFFFB]|\uD804\uDCBD|\uD82F[\uDCA0-\uDCA3]|\uD834[\uDD73-\uDD7A]|\uDB40[\uDC01\uDC20-\uDC7F]/g;
-
-
-
-
-/**
- * Generated by:
- *
- * var regenerate = require( "regenerate" );
- * var dashSymbols = require( * "unicode-8.0.0/General_Category/Dash_Punctuation/symbols" );
- * regenerate().add( dashSymbols ).toString();
- *
- * https://github.com/mathiasbynens/regenerate
- * https://github.com/mathiasbynens/unicode-8.0.0
- *
- * NOTE: In addition to [:dash:],  the below includes MINUS SIGN U+2212.
- */
-var regexpDashG = /[\-\u058A\u05BE\u1400\u1806\u2010-\u2015\u2E17\u2E1A\u2E3A\u2E3B\u2E40\u301C\u3030\u30A0\uFE31\uFE32\uFE58\uFE63\uFF0D\u2212]/g;
-
-
-
-
-/**
- * Generated by:
- *
- * var regenerate = require( "regenerate" );
- * var spaceSeparatorSymbols = require( "unicode-8.0.0/General_Category/Space_Separator/symbols" );
- * regenerate().add( spaceSeparatorSymbols ).toString();
- *
- * https://github.com/mathiasbynens/regenerate
- * https://github.com/mathiasbynens/unicode-8.0.0
- */
-var regexpZsG = /[ \xA0\u1680\u2000-\u200A\u202F\u205F\u3000]/g;
-
-
-
-
-/**
- * Loose Matching:
- * - Ignore all format characters, which includes RLM, LRM or ALM used to control BIDI
- *   formatting.
- * - Map all characters in [:Zs:] to U+0020 SPACE;
- * - Map all characters in [:Dash:] to U+002D HYPHEN-MINUS;
- */
-var looseMatching = function( value ) {
-	return value
-		.replace( regexpCfG, "" )
-		.replace( regexpDashG, "-" )
-		.replace( regexpZsG, " " );
-};
+var numberNumberRe = (/^([^0-9]*)(([0-9,]*[0-9]+)(\.[0-9]+)?)(E[+-]?[0-9]+)?([^0-9]*)$/);
 
 
 
@@ -986,132 +907,102 @@ var looseMatching = function( value ) {
  * ref: http://www.unicode.org/reports/tr35/tr35-numbers.html
  */
 var numberParse = function( value, properties ) {
-	var grammar, invertedNuDigitsMap, invertedSymbolMap, negative, number, prefix, prefixNSuffix,
-		suffix, tokenizer, valid;
+	var aux, infinitySymbol, invertedNuDigitsMap, invertedSymbolMap, localizedDigitRe,
+		localizedSymbolsRe, negativePrefix, negativeSuffix, number, prefix, suffix;
 
-	// Grammar:
-	// - Value <=           NaN | PositiveNumber | NegativeNumber
-	// - PositiveNumber <=  PositivePrefix NumberOrInf PositiveSufix
-	// - NegativeNumber <=  NegativePrefix NumberOrInf
-	// - NumberOrInf <=     Number | Inf
-	grammar = [
-		[ "nan" ],
-		[ "prefix", "infinity", "suffix" ],
-		[ "prefix", "number", "suffix" ],
-		[ "negativePrefix", "infinity", "negativeSuffix" ],
-		[ "negativePrefix", "number", "negativeSuffix" ]
-	];
+	infinitySymbol = properties[ 0 ];
+	invertedSymbolMap = properties[ 1 ];
+	negativePrefix = properties[ 2 ];
+	negativeSuffix = properties[ 3 ];
+	invertedNuDigitsMap = properties[ 4 ];
 
-	invertedSymbolMap = properties[ 0 ];
-	invertedNuDigitsMap = properties[ 1 ] || {};
-	tokenizer = properties[ 2 ];
+	// Infinite number.
+	if ( aux = value.match( infinitySymbol ) ) {
 
-	value = looseMatching( value );
+		number = Infinity;
+		prefix = value.slice( 0, aux.length );
+		suffix = value.slice( aux.length + 1 );
 
-	function parse( type ) {
-		return function( lexeme ) {
+	// Finite number.
+	} else {
 
-			// Reverse localized symbols and numbering system.
-			lexeme = lexeme.split( "" ).map(function( character ) {
-				return invertedSymbolMap[ character ] ||
-					invertedNuDigitsMap[ character ] ||
-					character;
-			}).join( "" );
+		// TODO: Create it during setup, i.e., make it a property.
+		localizedSymbolsRe = new RegExp(
+			Object.keys( invertedSymbolMap ).map(function( localizedSymbol ) {
+				return regexpEscape( localizedSymbol );
+			}).join( "|" ),
+			"g"
+		);
 
-			switch ( type ) {
-				case "infinity":
-					number = Infinity;
-					break;
-
-				case "nan":
-					number = NaN;
-					break;
-
-				case "number":
-
-					// Remove grouping separators.
-					lexeme = lexeme.replace( /,/g, "" );
-
-					number = +lexeme;
-					break;
-
-				case "prefix":
-				case "negativePrefix":
-					prefix = lexeme;
-					break;
-
-				case "suffix":
-					suffix = lexeme;
-					break;
-
-				case "negativeSuffix":
-					suffix = lexeme;
-					negative = true;
-					break;
-
-				// This should never be reached.
-				default:
-					throw new Error( "Internal error" );
-			}
-			return "";
-		};
-	}
-
-	function tokenizeNParse( _value, grammar ) {
-		return grammar.some(function( statement ) {
-			var value = _value;
-
-			// The whole grammar statement should be used (i.e., .every() return true) and value be
-			// entirely consumed (i.e., !value.length).
-			return statement.every(function( type ) {
-				if ( value.match( tokenizer[ type ] ) === null ) {
-					return false;
-				}
-
-				// Consume and parse it.
-				value = value.replace( tokenizer[ type ], parse( type ) );
-				return true;
-			}) && !value.length;
+		// Reverse localized symbols.
+		value = value.replace( localizedSymbolsRe, function( localizedSymbol ) {
+			return invertedSymbolMap[ localizedSymbol ];
 		});
-	}
 
-	valid = tokenizeNParse( value, grammar );
+		// Reverse localized numbering system.
+		if ( invertedNuDigitsMap ) {
 
-	// NaN
-	if ( !valid || isNaN( number ) ) {
-		return NaN;
-	}
+			// TODO: Create it during setup, i.e., make it a property.
+			localizedDigitRe = new RegExp(
+				Object.keys( invertedNuDigitsMap ).map(function( localizedDigit ) {
+					return regexpEscape( localizedDigit );
+				}).join( "|" ),
+				"g"
+			);
+			value = value.replace( localizedDigitRe, function( localizedDigit ) {
+				return invertedNuDigitsMap[ localizedDigit ];
+			});
+		}
 
-	prefixNSuffix = "" + prefix + suffix;
+		// Is it a valid number?
+		value = value.match( numberNumberRe );
+		if ( !value ) {
 
-	// Percent
-	if ( prefixNSuffix.indexOf( "%" ) !== -1 ) {
-		number /= 100;
+			// Invalid number.
+			return NaN;
+		}
 
-	// Per mille
-	} else if ( prefixNSuffix.indexOf( "\u2030" ) !== -1 ) {
-		number /= 1000;
+		prefix = value[ 1 ];
+		suffix = value[ 6 ];
+
+		// Remove grouping separators.
+		number = value[ 2 ].replace( /,/g, "" );
+
+		// Scientific notation
+		if ( value[ 5 ] ) {
+			number += value[ 5 ];
+		}
+
+		number = +number;
+
+		// Is it a valid number?
+		if ( isNaN( number ) ) {
+
+			// Invalid number.
+			return NaN;
+		}
+
+		// Percent
+		if ( value[ 0 ].indexOf( "%" ) !== -1 ) {
+			number /= 100;
+			suffix = suffix.replace( "%", "" );
+
+		// Per mille
+		} else if ( value[ 0 ].indexOf( "\u2030" ) !== -1 ) {
+			number /= 1000;
+			suffix = suffix.replace( "\u2030", "" );
+		}
 	}
 
 	// Negative number
-	if ( negative ) {
+	// "If there is an explicit negative subpattern, it serves only to specify the negative prefix
+	// and suffix. If there is no explicit negative subpattern, the negative subpattern is the
+	// localized minus sign prefixed to the positive subpattern" UTS#35
+	if ( prefix === negativePrefix && suffix === negativeSuffix ) {
 		number *= -1;
 	}
 
 	return number;
-};
-
-
-
-
-var numberParserFn = function( properties ) {
-	return function numberParser( value ) {
-		validateParameterPresence( value, "value" );
-		validateParameterTypeString( value, "value" );
-
-		return numberParse( value, properties );
-	};
-
 };
 
 
@@ -1144,25 +1035,6 @@ var numberSymbolInvertedMap = function( cldr ) {
 
 
 /**
- * objectMap( object, fn)
- *
- * - object
- *
- * - fn( pair ) => pair
- */
-var objectMap = function( object, fn ) {
-	return Object.keys( object ).map(function( key ) {
-		return fn([ key, object[ key ] ]);
-	}).reduce(function( object, pair ) {
-		object[ pair[ 0 ] ] = pair[ 1 ];
-		return object;
-	}, {});
-};
-
-
-
-
-/**
  * parseProperties( pattern, cldr )
  *
  * @pattern [String] raw pattern for numbers.
@@ -1170,139 +1042,46 @@ var objectMap = function( object, fn ) {
  * @cldr [Cldr instance].
  *
  * Return parser properties, used to feed parser function.
- *
- * TODO:
- * - Scientific_notation;
- * - Padding;
  */
-var numberParseProperties = function( pattern, cldr, options ) {
-	var aux, decimalSymbolRe, digitsRe, groupingSeparatorRe, infinitySymbol, invertedNuDigitsMap,
-		invertedSymbolMap, maximumFractionDigits, maximumSignificantDigits,
-		minimumSignificantDigits, nanSymbol, negativePrefix, negativeSuffix, nuDigitsMap,
-		numberTokenizer, prefix, primaryGroupingSize, secondaryGroupingSize, suffix, symbolMap,
-		formatProperties = numberFormatProperties( pattern, cldr, options );
+var numberParseProperties = function( pattern, cldr ) {
+	var invertedNuDigitsMap, invertedNuDigitsMapSanityCheck, negativePattern, negativeProperties,
+		nuDigitsMap = numberNumberingSystemDigitsMap( cldr );
 
-	prefix = looseMatching( formatProperties[ 0 ] );
-	maximumFractionDigits = formatProperties[ 4 ];
-	minimumSignificantDigits = formatProperties[ 5 ];
-	maximumSignificantDigits = formatProperties[ 6 ];
-	primaryGroupingSize = formatProperties[ 8 ];
-	secondaryGroupingSize = formatProperties[ 9 ];
-	suffix = looseMatching( formatProperties[ 10 ] );
-	negativePrefix = looseMatching( formatProperties[ 13 ] );
-	negativeSuffix = looseMatching( formatProperties[ 14 ] );
-	infinitySymbol = looseMatching( formatProperties[ 16 ] );
-	nanSymbol = looseMatching( formatProperties[ 17 ] );
-	symbolMap = objectMap( formatProperties[ 18 ], function( pair ) {
-		return [ pair[ 0 ], looseMatching( pair[ 1 ] ) ];
-	});
-	nuDigitsMap = formatProperties[ 19 ];
-
-	invertedSymbolMap = objectMap( numberSymbolInvertedMap( cldr ), function( pair ) {
-		return [ looseMatching( pair[ 0 ] ), pair[ 1 ] ];
-	});
-
-	digitsRe = nuDigitsMap ? "[" + nuDigitsMap + "]" : "\\d";
-	groupingSeparatorRe = regexpEscape( symbolMap[ "," ] );
-	decimalSymbolRe = regexpEscape( symbolMap[ "." ] );
-
+	pattern = pattern.split( ";" );
+	negativePattern = pattern[ 1 ] || "-" + pattern[ 0 ];
+	negativeProperties = numberPatternProperties( negativePattern );
 	if ( nuDigitsMap ) {
 		invertedNuDigitsMap = nuDigitsMap.split( "" ).reduce(function( object, localizedDigit, i ) {
 			object[ localizedDigit ] = String( i );
 			return object;
 		}, {} );
+		invertedNuDigitsMapSanityCheck = "0123456789".split( "" ).reduce(function( object, digit ) {
+			object[ digit ] = "invalid";
+			return object;
+		}, {} );
+		invertedNuDigitsMap = objectExtend(
+			invertedNuDigitsMapSanityCheck,
+			invertedNuDigitsMap
+		);
 	}
 
-	aux = [ prefix, suffix, negativePrefix, negativeSuffix ].map(function( value ) {
-		return value.replace( /('([^']|'')+'|'')|./g, function( character, literal ) {
-
-			// Literals
-			if ( literal ) {
-				return removeLiteralQuotes( literal );
-			}
-
-			// Symbols
-			character = character.replace( /[\-+E%\u2030]/, function( symbol ) {
-				return symbolMap[ symbol ];
-			});
-
-			return character;
-		});
-	});
-
-	prefix = aux[ 0 ];
-	suffix = aux[ 1 ];
-	negativePrefix = aux[ 2 ];
-	negativeSuffix = aux[ 3 ];
-
-	// Number
-	//
-	// number_re =                       integer fraction?
-	//
-	// integer =                         digits | digits_using_grouping_separators
-	//
-	// fraction =                        regexp((.\d+)?)
-	//
-	// digits =                          regexp(\d+)
-	//
-	// digits_w_grouping_separators =    digits_w_1_grouping_separators |
-	//                                   digits_w_2_grouping_separators
-	//
-	// digits_w_1_grouping_separators =  regexp(\d{1,3}(,\d{3})+)
-	//
-	// digits_w_2_grouping_separators =  regexp(\d{1,2}((,\d{2})*(,\d{3})))
-
-	// Integer part
-	numberTokenizer = digitsRe + "+";
-
-	// Grouping separators
-	if ( primaryGroupingSize ) {
-		if ( secondaryGroupingSize ) {
-			aux = digitsRe + "{1," + secondaryGroupingSize + "}((" + groupingSeparatorRe +
-				digitsRe + "{" + secondaryGroupingSize + "})*(" + groupingSeparatorRe +
-				digitsRe + "{" + primaryGroupingSize + "}))";
-		} else {
-			aux = digitsRe + "{1," + primaryGroupingSize + "}(" + groupingSeparatorRe +
-				digitsRe + "{" + primaryGroupingSize + "})+";
-		}
-		numberTokenizer = "(" + aux + "|" + numberTokenizer + ")";
-	}
-
-	// Fraction part? Only included if 1 or 2.
-	// 1: Using significant digit format.
-	// 2: Using integer and fractional format && it has a maximumFractionDigits.
-	if ( !isNaN( minimumSignificantDigits * maximumSignificantDigits ) || /* 1 */
-				maximumFractionDigits /* 2 */ ) {
-
-		// 1: Handle trailing decimal separator, e.g., `"1." => `1``.
-		aux = decimalSymbolRe + digitsRe + "+";
-		numberTokenizer = numberTokenizer + "(" + aux + "|" + decimalSymbolRe /* 1 */ + ")?" +
-
-			// Handle non-padded decimals, e.g., `".12"` => `0.12` by making the integer part
-			// optional.
-			"|(" + numberTokenizer + ")?" + aux;
-
-		numberTokenizer = "(" + numberTokenizer + ")";
-	}
-
-	// 0: @invertedSymbolMap [Object] Inverted symbol map.
-	// 1: @invertedNuDigitsMap [Object] Inverted digits map if numbering system is different than
-	//    `latn`.
-	// 2: @tokenizer [Object] Tokenizer map, used by parser to consume input.
+	// 0: @infinitySymbol [String] Infinity symbol.
+	// 1: @invertedSymbolMap [Object] Inverted symbol map augmented with sanity check.
+	//    The sanity check prevents permissive parsing, i.e., it prevents symbols that doesn't
+	//    belong to the localized set to pass through. This is obtained with the result of the
+	//    inverted map object overloading symbol name map object (the remaining symbol name
+	//    mappings will invalidate parsing, working as the sanity check).
+	// 2: @negativePrefix [String] Negative prefix.
+	// 3: @negativeSuffix [String] Negative suffix with percent or per mille stripped out.
+	// 4: @invertedNuDigitsMap [Object] Inverted digits map if numbering system is different than
+	//    `latn` augmented with sanity check (similar to invertedSymbolMap).
 	return [
-		invertedSymbolMap,
-		invertedNuDigitsMap,
-		{
-			infinity: new RegExp( "^" + regexpEscape( infinitySymbol ) ),
-			nan:  new RegExp( "^" + regexpEscape( nanSymbol ) ),
-			negativePrefix: new RegExp( "^" + regexpEscape( negativePrefix ) ),
-			negativeSuffix: new RegExp( "^" + regexpEscape( negativeSuffix ) ),
-			number: new RegExp( "^" + numberTokenizer ),
-			prefix: new RegExp( "^" + regexpEscape( prefix ) ),
-			suffix: new RegExp( "^" + regexpEscape( suffix ) )
-		}
+		numberSymbol( "infinity", cldr ),
+		objectExtend( {}, numberSymbolName, numberSymbolInvertedMap( cldr ) ),
+		negativeProperties[ 0 ],
+		negativeProperties[ 10 ].replace( "%", "" ).replace( "\u2030", "" ),
+		invertedNuDigitsMap
 	];
-
 };
 
 
@@ -1330,12 +1109,46 @@ var numberPattern = function( style, cldr ) {
 
 
 
-function validateDigits( properties ) {
-	var minimumIntegerDigits = properties[ 2 ],
-		minimumFractionDigits = properties[ 3 ],
-		maximumFractionDigits = properties[ 4 ],
-		minimumSignificantDigits = properties[ 5 ],
-		maximumSignificantDigits = properties[ 6 ];
+/**
+ * .numberFormatter( [options] )
+ *
+ * @options [Object]:
+ * - style: [String] "decimal" (default) or "percent".
+ * - see also number/format options.
+ *
+ * Return a function that formats a number according to the given options and default/instance
+ * locale.
+ */
+Globalize.numberFormatter =
+Globalize.prototype.numberFormatter = function( options ) {
+	var cldr, maximumFractionDigits, maximumSignificantDigits, minimumFractionDigits,
+		minimumIntegerDigits, minimumSignificantDigits, pattern, properties;
+
+	validateParameterTypePlainObject( options, "options" );
+
+	options = options || {};
+	cldr = this.cldr;
+
+	validateDefaultLocale( cldr );
+
+	cldr.on( "get", validateCldr );
+
+	if ( options.raw ) {
+		pattern = options.raw;
+	} else {
+		pattern = numberPattern( options.style || "decimal", cldr );
+	}
+
+	properties = numberFormatProperties( pattern, cldr, options );
+
+	cldr.off( "get", validateCldr );
+
+	minimumIntegerDigits = properties[ 2 ];
+	minimumFractionDigits = properties[ 3 ];
+	maximumFractionDigits = properties[ 4 ];
+
+	minimumSignificantDigits = properties[ 5 ];
+	maximumSignificantDigits = properties[ 6 ];
 
 	// Validate significant digit format properties
 	if ( !isNaN( minimumSignificantDigits * maximumSignificantDigits ) ) {
@@ -1354,50 +1167,12 @@ function validateDigits( properties ) {
 		validateParameterRange( maximumFractionDigits, "maximumFractionDigits",
 			minimumFractionDigits, 20 );
 	}
-}
 
-/**
- * .numberFormatter( [options] )
- *
- * @options [Object]:
- * - style: [String] "decimal" (default) or "percent".
- * - see also number/format options.
- *
- * Return a function that formats a number according to the given options and default/instance
- * locale.
- */
-Globalize.numberFormatter =
-Globalize.prototype.numberFormatter = function( options ) {
-	var args, cldr, pattern, properties, returnFn;
-
-	validateParameterTypePlainObject( options, "options" );
-
-	options = options || {};
-	cldr = this.cldr;
-
-	args = [ options ];
-
-	validateDefaultLocale( cldr );
-
-	cldr.on( "get", validateCldr );
-
-	if ( options.raw ) {
-		pattern = options.raw;
-	} else {
-		pattern = numberPattern( options.style || "decimal", cldr );
-	}
-
-	properties = numberFormatProperties( pattern, cldr, options );
-
-	cldr.off( "get", validateCldr );
-
-	validateDigits( properties );
-
-	returnFn = numberFormatterFn( properties );
-
-	runtimeBind( args, cldr, returnFn, [ properties ] );
-
-	return returnFn;
+	return function( value ) {
+		validateParameterPresence( value, "value" );
+		validateParameterTypeNumber( value, "value" );
+		return numberFormat( value, properties );
+	};
 };
 
 /**
@@ -1410,14 +1185,12 @@ Globalize.prototype.numberFormatter = function( options ) {
  */
 Globalize.numberParser =
 Globalize.prototype.numberParser = function( options ) {
-	var args, cldr, pattern, properties, returnFn;
+	var cldr, pattern, properties;
 
 	validateParameterTypePlainObject( options, "options" );
 
 	options = options || {};
 	cldr = this.cldr;
-
-	args = [ options ];
 
 	validateDefaultLocale( cldr );
 
@@ -1429,15 +1202,15 @@ Globalize.prototype.numberParser = function( options ) {
 		pattern = numberPattern( options.style || "decimal", cldr );
 	}
 
-	properties = numberParseProperties( pattern, cldr, options );
+	properties = numberParseProperties( pattern, cldr );
 
 	cldr.off( "get", validateCldr );
 
-	returnFn = numberParserFn( properties );
-
-	runtimeBind( args, cldr, returnFn, [ properties ] );
-
-	return returnFn;
+	return function( value ) {
+		validateParameterPresence( value, "value" );
+		validateParameterTypeString( value, "value" );
+		return numberParse( value, properties );
+	};
 };
 
 /**
@@ -1479,11 +1252,8 @@ Globalize.prototype.parseNumber = function( value, options ) {
  */
 Globalize._createErrorUnsupportedFeature = createErrorUnsupportedFeature;
 Globalize._numberNumberingSystem = numberNumberingSystem;
-Globalize._numberNumberingSystemDigitsMap = numberNumberingSystemDigitsMap;
 Globalize._numberPattern = numberPattern;
 Globalize._numberSymbol = numberSymbol;
-Globalize._looseMatching = looseMatching;
-Globalize._removeLiteralQuotes = removeLiteralQuotes;
 Globalize._stringPad = stringPad;
 Globalize._validateParameterTypeNumber = validateParameterTypeNumber;
 Globalize._validateParameterTypeString = validateParameterTypeString;

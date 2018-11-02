@@ -6,8 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Script.Serialization;
-using PostoDeAssistenciaWeb.Integracoes.Postmon.Models;
 using PostoDeAssistenciaWeb.Models;
 using PostoDeAssistenciaWeb.Models.Context;
 
@@ -49,7 +47,7 @@ namespace PostoDeAssistenciaWeb.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "EnderecoId,Uf,Cidade,Bairro,Logradouro,Complemento,Cep")] Endereco endereco)
+        public ActionResult Create([Bind(Include = "EnderecoId,Uf,Cidade,Bairro,Logradouro,Complemento")] Endereco endereco)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +80,7 @@ namespace PostoDeAssistenciaWeb.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "EnderecoId,Uf,Cidade,Bairro,Logradouro,Complemento,Cep")] Endereco endereco)
+        public ActionResult Edit([Bind(Include = "EnderecoId,Uf,Cidade,Bairro,Logradouro,Complemento")] Endereco endereco)
         {
             if (ModelState.IsValid)
             {
@@ -117,47 +115,6 @@ namespace PostoDeAssistenciaWeb.Controllers
             db.Enderecos.Remove(endereco);
             db.SaveChanges();
             return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public JsonResult ObterPorNome(string logradouro)
-        {
-            var listaEnderecos = db.Enderecos.ToList();
-
-            var filtro = listaEnderecos.Where(x =>
-                            Utils.CaracterEspecial.RemoverAcentos(x.Logradouro).ToLower().Contains(Utils.CaracterEspecial.RemoverAcentos(logradouro)));
-
-            if (filtro == null) return null;
-
-            var serializer = new JavaScriptSerializer();
-
-            return Json(serializer.Serialize(filtro), JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public JsonResult ObterTodos()
-        {
-            var listaEnderecos = db.Enderecos.ToList();
-
-            if (listaEnderecos == null) return null;
-
-            var serializer = new JavaScriptSerializer();
-
-            return Json(serializer.Serialize(listaEnderecos), JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public JsonResult ConsultarCep(string cep)
-        {
-            var postmon = new Integracoes.Postmon.Query();
-
-            var response = postmon.ConsultarCep(cep);
-
-            if (!response.EhValido) return Json(new EmptyResult(), JsonRequestBehavior.AllowGet);
-
-            var serializer = new JavaScriptSerializer();
-
-            return Json(serializer.Serialize(response), JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

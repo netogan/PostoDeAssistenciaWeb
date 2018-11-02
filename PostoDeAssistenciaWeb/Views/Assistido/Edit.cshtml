@@ -21,170 +21,153 @@
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     @Html.HiddenFor(model => model.AssistidoId)
 
-    <div class="form-horizontal" style="max-width: 900px;">
-        <h4>Assistido</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.NomeCompleto, "Nome completo", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @*@Html.EditorFor(model => model.NomeCompleto, new { htmlAttributes = new { @class = "form-control", @style = "width: 350px; max-width: 900px;" } })*@
-                @Html.EditorFor(model => model.NomeCompleto, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.NomeCompleto, "", new { @class = "text-danger" })
-            </div>
+<div class="form-horizontal" style="max-width: 900px;">
+    <h4>Assistido</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.NomeCompleto, "Nome completo", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @*@Html.EditorFor(model => model.NomeCompleto, new { htmlAttributes = new { @class = "form-control", @style = "width: 350px; max-width: 900px;" } })*@
+            @Html.EditorFor(model => model.NomeCompleto, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.NomeCompleto, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Sexo, htmlAttributes: new { @class = "control-label col-md-2" })
+
+        @*<div class="col-md-10">
+            @Html.EditorFor(model => model.Sexo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Sexo, "", new { @class = "text-danger" })
+            </div>*@
+
+        <div class="col-md-10">
+            @Html.DropDownList("Sexo", null, htmlAttributes: new { @class = "form-control", @style = "width: 120px;", required = "Informe o sexo" })
+            @*@Html.EditorFor(model => model.Sexo, new { htmlAttributes = new { @class = "form-control" } })*@
+            @Html.ValidationMessageFor(model => model.Sexo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Idade, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Idade, new { htmlAttributes = new { @class = "form-control", @style = "width: 70px;", @min = 0, @max = 150 } })
+            @Html.ValidationMessageFor(model => model.Idade, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DataNascimento, "Data nascimento", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.DataNascimento, "{0:yyyy-MM-dd}", new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.DataNascimento, "", new { @class = "text-danger" })
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Sexo, htmlAttributes: new { @class = "control-label col-md-2" })
 
-            @*<div class="col-md-10">
-                @Html.EditorFor(model => model.Sexo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Sexo, "", new { @class = "text-danger" })
-                </div>*@
-
+        @*@Html.LabelFor(model => model.DataNascimento, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("Sexo", null, htmlAttributes: new { @class = "form-control", @style = "width: 120px;", required = "Informe o sexo" })
-                @*@Html.EditorFor(model => model.Sexo, new { htmlAttributes = new { @class = "form-control" } })*@
-                @Html.ValidationMessageFor(model => model.Sexo, "", new { @class = "text-danger" })
-            </div>
-        </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Idade, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Idade, new { htmlAttributes = new { @class = "form-control", @style = "width: 70px;", @min = 0, @max = 150 } })
-                @Html.ValidationMessageFor(model => model.Idade, "", new { @class = "text-danger" })
-            </div>
-        </div>
+                @Html.TextBoxFor(model => model.DataNascimento, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.DataNascimento)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.DataNascimento, "Data nascimento", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.DataNascimento, "{0:yyyy-MM-dd}", new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.DataNascimento, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.DataNascimento, "", new { @class = "text-danger" })
-            </div>
+            </div>*@
+    </div>
 
-
-            @*@Html.LabelFor(model => model.DataNascimento, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-
-                    @Html.TextBoxFor(model => model.DataNascimento, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.DataNascimento)
-
-                    @Html.EditorFor(model => model.DataNascimento, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.DataNascimento, "", new { @class = "text-danger" })
-                </div>*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.GrauParentesco, "Grau parentesco", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.GrauParentesco, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.GrauParentesco, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.GrauParentesco, "Grau parentesco", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.GrauParentesco, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.GrauParentesco, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Telefone1, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Telefone1, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Telefone1, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Telefone1, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Telefone1, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Telefone1, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Telefone2, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Telefone2, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Telefone2, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Telefone2, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Telefone2, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Telefone2, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.NumeracaoCalcado, "Nº calçado", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.NumeracaoCalcado, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.NumeracaoCalcado, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.NumeracaoCalcado, "Nº calçado", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.NumeracaoCalcado, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.NumeracaoCalcado, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.NumeracaoRoupaSuperior, "Nº roupa (superior)", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.NumeracaoRoupaSuperior, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.NumeracaoRoupaSuperior, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.NumeracaoRoupaSuperior, "Nº roupa (superior)", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.NumeracaoRoupaSuperior, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.NumeracaoRoupaSuperior, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.NumeracaoRoupaInferior, "Nº roupa (inferior)", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.NumeracaoRoupaInferior, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.NumeracaoRoupaInferior, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.NumeracaoRoupaInferior, "Nº roupa (inferior)", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.NumeracaoRoupaInferior, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.NumeracaoRoupaInferior, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Observacao, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Observacao, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Observacao, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Observacao, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Observacao, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Observacao, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Principal, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.Principal)
-                    @Html.ValidationMessageFor(model => model.Principal, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-10">
-                <button type="button" id="incluirVinculo" class="control-label btn btn-secondary" style="text-align:center; margin-right: 4px">Adicionar Vinculo</button>
-                <button type="button" id="removerVinculo" class="control-label btn btn-danger" style="text-align:center">Remover Vinculo</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.DependenteId, new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
-                @Html.Editor("Dependente", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @style = "width:100%; min-width:440px;" } })
-                @Html.ValidationMessageFor(model => model.DependenteId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-10">
-                <button type="button" id="incluirEndereco" class="control-label btn btn-secondary" style="text-align:center; margin-right: 4px">Adicionar Endereço</button>
-                <button type="button" id="removerEndereco" class="control-label btn btn-danger" style="text-align:center">Remover Endereço</button>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-10">
-                @Html.Editor("Endereco_EnderecoId", new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
-                @Html.Editor("DescricaoEndereco", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @style = "width:100%; min-width:600px;" } })
-                @Html.ValidationMessageFor(model => model.DependenteId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-
-
-        <div class="form-group">
-            <div class="col-md-10">
-                @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-primary" })
-                <input type="submit" value="Salvar" class="btn btn-success" />
+    <div class="form-group">
+        @Html.LabelFor(model => model.Principal, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.Principal)
+                @Html.ValidationMessageFor(model => model.Principal, "", new { @class = "text-danger" })
             </div>
         </div>
     </div>
 
-    //Popup Vinculo
-    <div id="dialog-modalVinculo" title="Selecione o vínculo" style="display:none">
-        <input id="pesquisaVinculo" class="form-control" onkeyup="findVinculo()" />
+    <div class="form-group">
+        <div class="col-md-10">
+            <button type="button" id="vinculo" class="control-label btn btn-secondary" style="text-align:center; margin-right: 4px">Adicionar Vinculo</button>
+            <button type="button" id="removerVinculo" class="control-label btn btn-danger" style="text-align:center">Remover Vinculo</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.DependenteId, new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
+            @Html.Editor("Dependente", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            @Html.ValidationMessageFor(model => model.DependenteId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            @Html.ActionLink("Voltar", "Index", null, new { @class = "btn btn-primary" })
+            <input type="submit" value="Salvar" class="btn btn-success" />
+        </div>
+    </div>
+</div>
+
+    //Popup
+    <div id="dialog-modal" title="Selecione o vínculo" style="display:none">
+        <input id="pesquisa" class="form-control" onkeyup="findVinculo()" />
         <br />
         <br />
         <table id="tbVinculo" class="table">
@@ -203,21 +186,6 @@
                     </tr>
                 }
             </tbody>
-        </table>
-    </div>
-
-    //Popup Endereços
-    <div id="dialog-modalEndereco" title="Selecione o endereço" style="display:none">
-        <input id="pesquisaLogradouro" class="form-control" onkeyup="findEndereco()" />
-        <br />
-        <br />
-        <table id="tbEndereco" class="table">
-            <tr>
-                <th>
-                    @Html.DisplayName("Bairro | Logradouro")
-                </th>
-            </tr>
-            <tbody id="tbEnderecoBody"></tbody>
         </table>
     </div>
 }
@@ -250,36 +218,20 @@
 
     <script>
         $(function () {
-            $("#dialog-modalVinculo").dialog({
+            $("#dialog-modal").dialog({
                 autoOpen: false,
                 width: 600,
                 height: 400,
                 modal: true
             });
 
-            $("#dialog-modalEndereco").dialog({
-                autoOpen: false,
-                width: 800,
-                height: 400,
-                modal: true
-            });
-
-            $("#incluirVinculo").click(function () {
-                $("#dialog-modalVinculo").dialog("open");
-            });
-
-            $("#incluirEndereco").click(function () {
-                $("#dialog-modalEndereco").dialog(carregarEnderecos()).dialog("open")
+            $("#vinculo").click(function () {
+                $("#dialog-modal").dialog("open");
             });
 
             $("#removerVinculo").click(function () {
                 $("#Dependente").val(null);
                 $("#DependenteId").val(null);
-            });
-
-            $("#removerEndereco").click(function () {
-                $("#DescricaoEndereco").val(null);
-                $("#Endereco_EnderecoId").val(null);
             });
 
         });
@@ -290,86 +242,26 @@
         function setValorVinculo(idVinculo, nomeVinculo) {
             $("#Dependente").val(nomeVinculo);
             $("#DependenteId").val(idVinculo);
-            $("#dialog-modalVinculo").dialog("close");
-        }
-    </script>
-
-    <script>
-        function setValorEndereco(idEndereco, descricaoEndereco) {
-            $("#DescricaoEndereco").val(descricaoEndereco);
-            $("#Endereco_EnderecoId").val(idEndereco);
-            $("#dialog-modalEndereco").dialog("close");
+            $("#dialog-modal").dialog("close");
         }
     </script>
 
     <script>
         function findVinculo() {
-            $("#tbEnderecoBody").empty();
+            $("#tbVinculoBody").empty();
 
             $.ajax({
                 type: "GET",
                 url: "/Assistido/ObterPorNome",
                 datatype: "json",
-                data: { "nome": $("[id$=pesquisaVinculo]").val() },
+                data: { "nome": $("[id$=pesquisa]").val() },
                 success: function (result) {
 
                     for (l = 0; l < JSON.parse(result).length; l++) {
                         $('#tbVinculoBody').append(
                             `<tr>
-                                    <td>
-                                        <a href='#' style='text-decoration:none' onclick="setValorVinculo('${JSON.parse(result)[l].AssistidoId}', '${JSON.parse(result)[l].NomeCompleto}' ); "> ${JSON.parse(result)[l].NomeCompleto} </a>
-                                    </td>
-                                </tr>`
-                        )
-                    }
-                }
-            });
-        }
-    </script>
-
-    <script>
-        function carregarEnderecos() {
-            $("#tbEnderecoBody").empty();
-
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("ObterTodos", "Endereco")',
-                datatype: "json",
-                success: function (result) {
-                    for (l = 0; l < JSON.parse(result).length; l++) {
-                        $('#tbEnderecoBody').append(
-                            `<tr>
                                 <td>
-                                    <a href='#' style='text-decoration:none' onclick="setValorEndereco(
-                                        '${JSON.parse(result)[l].EnderecoId}',
-                                        '${JSON.parse(result)[l].Bairro} | ${JSON.parse(result)[l].Logradouro}' ); "> ${JSON.parse(result)[l].Bairro} | ${JSON.parse(result)[l].Logradouro} </a>
-                                </td>
-                            </tr>`
-                        )
-                    }
-                }
-            });
-        }
-    </script>
-
-    <script>
-        function findEndereco() {
-            $("#tbEnderecoBody").empty();
-
-            $.ajax({
-                type: "GET",
-                url: '@Url.Action("ObterPorNome", "Endereco")',
-                datatype: "json",
-                data: { "logradouro": $("$pesquisaLogradouro").val() },
-                success: function (result) {
-
-                    for (l = 0; l < JSON.parse(result).length; l++) {
-                        $('#tbEnderecoBody').append(
-                            `<tr>
-                                <td>
-                                    <a href='#' style='text-decoration:none' onclick="setValorVinculo(
-                                        '${JSON.parse(result)[l].AssistidoId}',
-                                        '${JSON.parse(result)[l].NomeCompleto}' ); "> ${JSON.parse(result)[l].NomeCompleto} </a>
+                                    <a href='#' style='text-decoration:none' onclick="setValorVinculo('${JSON.parse(result)[l].AssistidoId}', '${JSON.parse(result)[l].NomeCompleto}' ); "> ${JSON.parse(result)[l].NomeCompleto} </a>
                                 </td>
                             </tr>`
                         )

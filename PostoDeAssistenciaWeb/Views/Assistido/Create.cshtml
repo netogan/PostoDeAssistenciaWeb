@@ -150,7 +150,7 @@
     <div class="form-group">
         <div class="col-md-10">
             <input id="DependenteId" class="form-control" style="display:none" />
-            @Html.Editor("Dependente", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @style = "width:100%; min-width:440px;" } })
+            @Html.Editor("Dependente", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
             @Html.ValidationMessageFor(model => model.DependenteId, "", new { @class = "text-danger" })
         </div>
     </div>
