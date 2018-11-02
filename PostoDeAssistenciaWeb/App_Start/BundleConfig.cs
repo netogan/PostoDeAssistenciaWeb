@@ -29,6 +29,7 @@ namespace PostoDeAssistenciaWeb
                       "~/Content/site.css",
                       "~/Content/bootstrap-datepicker3.css"));
 
+            BundleTable.EnableOptimizations = true;
         }
     }
 }
