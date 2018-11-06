@@ -18,6 +18,6 @@ namespace PostoDeAssistenciaWeb.Models
 
         public string Complemento { get; set; }
 
-        public virtual Assistido Assistido { get; set; }
+        //public virtual Assistido Assistido { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace PostoDeAssistenciaWeb.Models.EntityConfig
             Property(a => a.Logradouro).IsRequired().HasMaxLength(500);
             Property(a => a.Complemento).IsOptional().HasMaxLength(500);
 
-            HasOptional(s => s.Assistido).WithOptionalPrincipal(ad => ad.Endereco);
+            //HasOptional(s => s.Assistido).WithOptionalPrincipal(ad => ad.EnderecoAtual)
 
             ToTable("Enderecos");
         }

@@ -134,16 +134,39 @@ namespace PostoDeAssistenciaWeb.Controllers
             return Json(serializer.Serialize(filtro), JsonRequestBehavior.AllowGet);
         }
 
+        //[HttpGet]
+        //public JsonResult ObterTodos()
+        //{
+        //    var listaEnderecos = db.Enderecos.ToList();
+
+        //    if (listaEnderecos == null) return null;
+
+        //    var serializer = new JavaScriptSerializer();
+
+        //    return Json(serializer.Serialize(listaEnderecos), JsonRequestBehavior.AllowGet);
+        //}
+
         [HttpGet]
-        public JsonResult ObterTodos()
+        public JsonResult ObterPorLogradouro(string logradouro)
         {
             var listaEnderecos = db.Enderecos.ToList();
 
-            if (listaEnderecos == null) return null;
-
             var serializer = new JavaScriptSerializer();
 
-            return Json(serializer.Serialize(listaEnderecos), JsonRequestBehavior.AllowGet);
+            if (logradouro == null) return Json(serializer.Serialize(listaEnderecos), JsonRequestBehavior.AllowGet);
+
+            var filtro = listaEnderecos.Where(x =>
+                            Utils.CaracterEspecial.RemoverAcentos(x.Logradouro).ToLower().Contains(Utils.CaracterEspecial.RemoverAcentos(logradouro)));
+
+            if (filtro == null) return null;
+
+            return Json(serializer.Serialize(filtro), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public IEnumerable<Endereco> ObterTodos()
+        {
+            return db.Enderecos.ToList();
         }
 
         [HttpGet]
@@ -158,6 +181,20 @@ namespace PostoDeAssistenciaWeb.Controllers
             var serializer = new JavaScriptSerializer();
 
             return Json(serializer.Serialize(response), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult ObterPorId(Guid id)
+        {
+            if (id == null) return Json(new EmptyResult(), JsonRequestBehavior.AllowGet);
+
+            var endereco = db.Enderecos.Find(id);
+
+            if (endereco == null) return Json(new EmptyResult(), JsonRequestBehavior.AllowGet);
+
+            var serializer = new JavaScriptSerializer();
+
+            return Json(serializer.Serialize(endereco), JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

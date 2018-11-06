@@ -11,6 +11,8 @@
     ViewData["Sexo"] = optionsSexo;
 
     var listaAssistidos = new PostoDeAssistenciaWeb.Controllers.AssistidoController().ObterTodos().ToList();
+
+    var listaEnderecos = new PostoDeAssistenciaWeb.Controllers.EnderecoController().ObterTodos().ToList();
 }
 
 
@@ -166,12 +168,11 @@
 
         <div class="form-group">
             <div class="col-md-10">
-                @Html.Editor("Endereco_EnderecoId", new { htmlAttributes = new { @class = "form-control", @style = "display:none" } })
-                @Html.Editor("DescricaoEndereco", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @style = "width:100%; min-width:600px;" } })
-                @Html.ValidationMessageFor(model => model.DependenteId, "", new { @class = "text-danger" })
+                <input id="EnderecoId" name="EnderecoId" class="form-control" style="display:none" value="@Model.EnderecoId" />
+                @Html.Editor("DescricaoEndereco", new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @style = "width:100%; min-width:440px;" } })
+                @Html.ValidationMessage("DescricaoEndereco", "", new { @class = "text-danger" })
             </div>
         </div>
-
 
 
         <div class="form-group">
@@ -207,26 +208,45 @@
     </div>
 
     //Popup Endereços
-    <div id="dialog-modalEndereco" title="Selecione o endereço" style="display:none">
-        <input id="pesquisaLogradouro" class="form-control" onkeyup="findEndereco()" />
+    <div id="dialog-endereco" title="Selecione o endereço" style="display:none">
+        <input id="pesquisaEndereco" class="form-control" onkeyup="findEndereco()" />
         <br />
         <br />
         <table id="tbEndereco" class="table">
             <tr>
                 <th>
-                    @Html.DisplayName("Bairro | Logradouro")
+                    @Html.DisplayName("Cidade")
+                </th>
+                <th>
+                    @Html.DisplayName("Bairro")
+                </th>
+                <th>
+                    @Html.DisplayName("Logradouro")
                 </th>
             </tr>
-            <tbody id="tbEnderecoBody"></tbody>
+            <tbody id="tbEnderecoBody">
+                @foreach (var item in listaEnderecos)
+                {
+                    <tr>
+                        <td>
+                            <a href="#" style="text-decoration:none" onclick="setValorEndereco('@item.EnderecoId', '@($"{item.Cidade} | {item.Bairro} | {item.Logradouro}")');">@item.Cidade</a>
+                        </td>
+                        <td>
+                            <a href="#" style="text-decoration:none" onclick="setValorEndereco('@item.EnderecoId', '@($"{item.Cidade} | {item.Bairro} | {item.Logradouro}")');">@item.Bairro</a>
+                        </td>
+                        <td>
+                            <a href="#" style="text-decoration:none" onclick="setValorEndereco('@item.EnderecoId', '@($"{item.Cidade} | {item.Bairro} | {item.Logradouro}")');">@item.Logradouro</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
         </table>
     </div>
 }
 
-
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
 
-    <script type="text/javascript" language="javascript">
+    <script>
         $(function () {
             $('input[type=datetime]').datepicker({
                 dateFormat: 'dd/mm/yy',
@@ -257,7 +277,7 @@
                 modal: true
             });
 
-            $("#dialog-modalEndereco").dialog({
+            $("#dialog-endereco").dialog({
                 autoOpen: false,
                 width: 800,
                 height: 400,
@@ -269,7 +289,7 @@
             });
 
             $("#incluirEndereco").click(function () {
-                $("#dialog-modalEndereco").dialog(carregarEnderecos()).dialog("open")
+                $("#dialog-endereco").dialog("open")
             });
 
             $("#removerVinculo").click(function () {
@@ -279,7 +299,7 @@
 
             $("#removerEndereco").click(function () {
                 $("#DescricaoEndereco").val(null);
-                $("#Endereco_EnderecoId").val(null);
+                $("#EnderecoId").val(null);
             });
 
         });
@@ -297,8 +317,8 @@
     <script>
         function setValorEndereco(idEndereco, descricaoEndereco) {
             $("#DescricaoEndereco").val(descricaoEndereco);
-            $("#Endereco_EnderecoId").val(idEndereco);
-            $("#dialog-modalEndereco").dialog("close");
+            $("#EnderecoId").val(idEndereco);
+            $("#dialog-endereco").dialog("close");
         }
     </script>
 
@@ -316,10 +336,10 @@
                     for (l = 0; l < JSON.parse(result).length; l++) {
                         $('#tbVinculoBody').append(
                             `<tr>
-                                    <td>
-                                        <a href='#' style='text-decoration:none' onclick="setValorVinculo('${JSON.parse(result)[l].AssistidoId}', '${JSON.parse(result)[l].NomeCompleto}' ); "> ${JSON.parse(result)[l].NomeCompleto} </a>
-                                    </td>
-                                </tr>`
+                                                    <td>
+                                                        <a href='#' style='text-decoration:none' onclick="setValorVinculo('${JSON.parse(result)[l].AssistidoId}', '${JSON.parse(result)[l].NomeCompleto}' ); "> ${JSON.parse(result)[l].NomeCompleto} </a>
+                                                    </td>
+                                                </tr>`
                         )
                     }
                 }
@@ -328,54 +348,57 @@
     </script>
 
     <script>
-        function carregarEnderecos() {
-            $("#tbEnderecoBody").empty();
+        function OnChangeEndereco() {
+            if ($("#EnderecoId").val() == '')
+                return;
+
+            $("#DescricaoEndereco").val(null);
 
             $.ajax({
                 type: "GET",
-                url: '@Url.Action("ObterTodos", "Endereco")',
+                url: '@Url.Action("ObterPorId", "Endereco")',
                 datatype: "json",
+                data: { "id": $("#EnderecoId").val() },
                 success: function (result) {
-                    for (l = 0; l < JSON.parse(result).length; l++) {
-                        $('#tbEnderecoBody').append(
-                            `<tr>
-                                <td>
-                                    <a href='#' style='text-decoration:none' onclick="setValorEndereco(
-                                        '${JSON.parse(result)[l].EnderecoId}',
-                                        '${JSON.parse(result)[l].Bairro} | ${JSON.parse(result)[l].Logradouro}' ); "> ${JSON.parse(result)[l].Bairro} | ${JSON.parse(result)[l].Logradouro} </a>
-                                </td>
-                            </tr>`
-                        )
-                    }
+                    $("#DescricaoEndereco").val(`${JSON.parse(result).Cidade} | ${JSON.parse(result).Bairro} | ${JSON.parse(result).Logradouro}`)
                 }
             });
         }
     </script>
 
+    <script>
+        $("#EnderecoId").on("change", OnChangeEndereco())
+    </script>
+    
     <script>
         function findEndereco() {
             $("#tbEnderecoBody").empty();
 
             $.ajax({
                 type: "GET",
-                url: '@Url.Action("ObterPorNome", "Endereco")',
+                url: "/Endereco/ObterPorLogradouro",
                 datatype: "json",
-                data: { "logradouro": $("$pesquisaLogradouro").val() },
+                data: { "logradouro": $("[id$=pesquisaEndereco]").val() },
                 success: function (result) {
 
                     for (l = 0; l < JSON.parse(result).length; l++) {
                         $('#tbEnderecoBody').append(
                             `<tr>
-                                <td>
-                                    <a href='#' style='text-decoration:none' onclick="setValorVinculo(
-                                        '${JSON.parse(result)[l].AssistidoId}',
-                                        '${JSON.parse(result)[l].NomeCompleto}' ); "> ${JSON.parse(result)[l].NomeCompleto} </a>
-                                </td>
-                            </tr>`
+                                    <td>
+                                        <a href="#" style="text-decoration:none" onclick="setValorEndereco('${JSON.parse(result)[l].EnderecoId}', '${JSON.parse(result)[l].Cidade} | ${JSON.parse(result)[l].Bairro} | ${JSON.parse(result)[l].Logradouro}');">${JSON.parse(result)[l].Cidade}</a>
+                                    </td>
+                                    <td>
+                                        <a href="#" style="text-decoration:none" onclick="setValorEndereco('${JSON.parse(result)[l].EnderecoId}', '${JSON.parse(result)[l].Cidade} | ${JSON.parse(result)[l].Bairro} | ${JSON.parse(result)[l].Logradouro}');">${JSON.parse(result)[l].Bairro}</a>
+                                    </td>
+                                    <td>
+                                        <a href="#" style="text-decoration:none" onclick="setValorEndereco('${JSON.parse(result)[l].EnderecoId}', '${JSON.parse(result)[l].Cidade} | ${JSON.parse(result)[l].Bairro} | ${JSON.parse(result)[l].Logradouro}');">${JSON.parse(result)[l].Logradouro}</a>
+                                    </td>
+                                </tr>`
                         )
                     }
                 }
             });
+
         }
     </script>
 

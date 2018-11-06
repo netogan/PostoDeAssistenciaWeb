@@ -49,7 +49,7 @@ namespace PostoDeAssistenciaWeb.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "AssistidoId,NomeCompleto,Sexo,Idade,DataNascimento,GrauParentesco,Telefone1,Telefone2,NumeracaoCalcado,NumeracaoRoupaSuperior,NumeracaoRoupaInferior,Observacao,Principal,DependenteId,Endereco_EnderecoId")] Assistido assistido)
+        public ActionResult Create([Bind(Include = "AssistidoId,NomeCompleto,Sexo,Idade,DataNascimento,GrauParentesco,Telefone1,Telefone2,NumeracaoCalcado,NumeracaoRoupaSuperior,NumeracaoRoupaInferior,Observacao,Principal,DependenteId,EnderecoId")] Assistido assistido)
         {
             if (ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace PostoDeAssistenciaWeb.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "AssistidoId,NomeCompleto,Sexo,Idade,DataNascimento,GrauParentesco,Telefone1,Telefone2,NumeracaoCalcado,NumeracaoRoupaSuperior,NumeracaoRoupaInferior,Observacao,Principal,DependenteId,Endereco_EnderecoId")] Assistido assistido)
+        public ActionResult Edit([Bind(Include = "AssistidoId,NomeCompleto,Sexo,Idade,DataNascimento,GrauParentesco,Telefone1,Telefone2,NumeracaoCalcado,NumeracaoRoupaSuperior,NumeracaoRoupaInferior,Observacao,Principal,DependenteId,EnderecoId")] Assistido assistido)
         {
             if (ModelState.IsValid)
             {
@@ -131,12 +131,14 @@ namespace PostoDeAssistenciaWeb.Controllers
         {
             var listaAssistidos = db.Assistidos.ToList();
 
+            var serializer = new JavaScriptSerializer();
+
+            if (nome == null) return Json(serializer.Serialize(listaAssistidos), JsonRequestBehavior.AllowGet);
+
             var filtro = listaAssistidos.Where(x => 
                             Utils.CaracterEspecial.RemoverAcentos(x.NomeCompleto).ToLower().Contains(Utils.CaracterEspecial.RemoverAcentos(nome)));
 
             if (filtro == null) return null;
-
-            var serializer = new JavaScriptSerializer();
 
             return Json(serializer.Serialize(filtro), JsonRequestBehavior.AllowGet);
         }

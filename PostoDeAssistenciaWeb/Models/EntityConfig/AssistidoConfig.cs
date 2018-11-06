@@ -19,6 +19,8 @@ namespace PostoDeAssistenciaWeb.Models.EntityConfig
             Property(a => a.NumeracaoRoupaInferior).IsOptional();
             Property(a => a.DependenteId).IsOptional();
 
+            Property(a => a.EnderecoId).IsOptional();
+
             ToTable("Assistidos");
         }
     }
