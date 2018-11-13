@@ -166,7 +166,13 @@ namespace PostoDeAssistenciaWeb.Controllers
         [HttpGet]
         public IEnumerable<Endereco> ObterTodos()
         {
-            return db.Enderecos.ToList();
+            var enderecos = db.Enderecos.ToList();
+
+            var assistidos = db.Assistidos.ToList();
+
+            var enderecosLivres = enderecos.Where(e => !assistidos.Any(a => e.EnderecoId == a.EnderecoId));
+
+            return enderecosLivres;
         }
 
         [HttpGet]

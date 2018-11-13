@@ -39,6 +39,8 @@ namespace PostoDeAssistenciaWeb.Models
 
         public Guid? DependenteId { get; set; }
 
+        public DateTime? DataAtualizacao { get; set; }
+
         public virtual Guid? EnderecoId { get; set; }
 
         [ForeignKey("EnderecoId")]

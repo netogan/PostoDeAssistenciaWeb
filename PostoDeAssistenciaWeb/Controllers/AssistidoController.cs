@@ -54,6 +54,7 @@ namespace PostoDeAssistenciaWeb.Controllers
             if (ModelState.IsValid)
             {
                 assistido.AssistidoId = Guid.NewGuid();
+                assistido.DataAtualizacao = DateTime.Now;
                 db.Assistidos.Add(assistido);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -88,6 +89,7 @@ namespace PostoDeAssistenciaWeb.Controllers
             if (ModelState.IsValid)
             {
                 db.Entry(assistido).State = EntityState.Modified;
+                assistido.DataAtualizacao = DateTime.Now;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }

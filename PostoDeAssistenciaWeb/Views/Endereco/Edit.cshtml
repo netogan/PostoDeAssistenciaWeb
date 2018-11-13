@@ -1,9 +1,5 @@
 ﻿@model PostoDeAssistenciaWeb.Models.Endereco
 
-@{
-    ViewBag.Title = "Edit";
-}
-
 
 @using (Html.BeginForm())
 {
@@ -83,7 +79,7 @@
 }
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    @*@Scripts.Render("~/bundles/jqueryval")*@
 
     <script>
         $("#Cep").focusout(function () {
