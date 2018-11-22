@@ -1,11 +1,12 @@
-﻿using PostoDeAssistenciaWeb.Models.EntityConfig;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using PostoDeAssistenciaWeb.Models.EntityConfig;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace PostoDeAssistenciaWeb.Models.Context
 {
     [DbConfigurationType(typeof(MySql.Data.Entity.MySqlEFConfiguration))]
-    public class Contexto : DbContext
+    public class Contexto : IdentityDbContext<AppUser>
     {
         public Contexto() : base("Contexto")
         {
